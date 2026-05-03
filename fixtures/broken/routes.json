@@ -1,0 +1,9 @@
+[
+  {
+    "id": "broken-agent",
+    "primary": "missing-model",
+    "fallbacks": ["expensive-model", "also-missing"],
+    "monthlyBudgetUsd": 1,
+    "requireTags": ["general"]
+  }
+]
