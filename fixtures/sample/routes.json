@@ -1,0 +1,20 @@
+[
+  {
+    "id": "agent-default",
+    "description": "Default agent route with local escape hatch.",
+    "primary": "gpt-4.1-mini",
+    "fallbacks": ["llama-3.1-8b-local", "gpt-4.1"],
+    "monthlyBudgetUsd": 120,
+    "maxInputPerMillion": 1,
+    "maxOutputPerMillion": 3,
+    "requireTags": ["general"]
+  },
+  {
+    "id": "private-drafts",
+    "description": "Keep draft review local first.",
+    "primary": "llama-3.1-8b-local",
+    "fallbacks": [],
+    "monthlyBudgetUsd": 5,
+    "requireTags": ["private"]
+  }
+]
