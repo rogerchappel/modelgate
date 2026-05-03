@@ -1,0 +1,14 @@
+[
+  {
+    "id": "custom-prod",
+    "kind": "custom",
+    "models": [
+      {
+        "id": "expensive-model",
+        "provider": "custom-prod",
+        "cost": { "inputPerMillion": 20, "outputPerMillion": 60 },
+        "tags": ["premium"]
+      }
+    ]
+  }
+]
