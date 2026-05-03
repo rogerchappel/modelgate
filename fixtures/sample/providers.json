@@ -1,0 +1,38 @@
+[
+  {
+    "id": "openai-prod",
+    "kind": "openai",
+    "displayName": "OpenAI production",
+    "env": ["OPENAI_API_KEY"],
+    "models": [
+      {
+        "id": "gpt-4.1-mini",
+        "provider": "openai-prod",
+        "contextWindow": 1047576,
+        "cost": { "inputPerMillion": 0.4, "outputPerMillion": 1.6, "currency": "USD" },
+        "tags": ["general", "agent", "cheap"]
+      },
+      {
+        "id": "gpt-4.1",
+        "provider": "openai-prod",
+        "contextWindow": 1047576,
+        "cost": { "inputPerMillion": 2, "outputPerMillion": 8, "currency": "USD" },
+        "tags": ["general", "agent", "premium"]
+      }
+    ]
+  },
+  {
+    "id": "local-lab",
+    "kind": "local",
+    "displayName": "Local llama.cpp lab",
+    "models": [
+      {
+        "id": "llama-3.1-8b-local",
+        "provider": "local-lab",
+        "contextWindow": 131072,
+        "cost": { "inputPerMillion": 0, "outputPerMillion": 0, "currency": "USD" },
+        "tags": ["general", "private", "offline"]
+      }
+    ]
+  }
+]
