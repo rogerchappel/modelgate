@@ -2,26 +2,30 @@
 
 ## Supported Versions
 
-Replace this section with the supported versions for `modelgate`.
+`modelgate` is pre-1.0. The `main` branch and latest published 0.x release (when releases exist) receive best-effort security fixes.
 
-Example:
-
-```md
 | Version | Supported |
 | --- | --- |
-| .x | Yes |
-| < .0 | No |
-```
-
-If the project does not publish versioned releases yet, say that clearly.
+| `main` | Best effort |
+| `0.x` | Best effort after first release |
 
 ## Reporting a Vulnerability
 
 Please do not report suspected vulnerabilities in public issues, pull requests, or discussions.
 
-Ask maintainers for the private security reporting path before sharing details.
+Use GitHub private vulnerability reporting if it is enabled for the repository. If it is not enabled yet, open a public issue that asks for a private reporting channel without including exploit details, secrets, personal data, provider tokens, or private route configs.
 
-If no private reporting path exists yet, ask maintainers through public project channels for a private reporting path. Do not include exploit details, secrets, personal data, or sensitive technical details in public messages.
+## Project Security Boundaries
+
+`modelgate` is intentionally local-first:
+
+- It reads local JSON fixture files.
+- It does not make provider API calls.
+- It does not proxy LLM traffic.
+- It does not read real API key values.
+- It does not upload telemetry.
+
+Sensitive provider secrets should never be committed to fixtures. Use environment variable names such as `OPENAI_API_KEY`, not the values.
 
 ## What to Include
 
@@ -33,25 +37,19 @@ When a private reporting path is available, include:
 - Potential impact.
 - Suggested mitigation, if known.
 
-## Response Expectations
-
-Maintainers review good-faith reports as capacity allows.
-
-Do not imply paid support, guaranteed response times, guaranteed fixes, or service-level agreements unless `modelgate` explicitly provides them.
-
 ## Scope
 
 In scope:
 
-- Vulnerabilities in modelgate.
-- Insecure default configuration shipped by this project.
-- CI, release, or dependency guidance maintained by this project.
+- Vulnerabilities in `modelgate`.
+- Unsafe parsing, CLI, reporting, package, or CI behavior shipped here.
+- Insecure default fixture or documentation patterns.
 
 Out of scope:
 
 - General support requests.
-- Requests for guaranteed maintenance timelines.
-- Issues in unrelated downstream projects.
+- Findings caused by downstream private configs that are not part of this repo.
+- Provider outages, billing policies, or API behavior outside `modelgate`.
 
 ## Disclosure
 
