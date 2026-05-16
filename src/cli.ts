@@ -18,7 +18,7 @@ interface CliOptions {
 const help = `modelgate — local-first LLM route and cost inspector
 
 Usage:
-  modelgate inspect <directory> [--format markdown|json] [--output file]
+  modelgate inspect <directory> [--format markdown|json] [--output file] [--input-tokens n] [--output-tokens n]
   modelgate --help
   modelgate --version
 
@@ -29,6 +29,11 @@ Fixture shape:
 Examples:
   modelgate inspect fixtures/sample
   modelgate inspect fixtures/sample --format json --output out/report.json
+  modelgate inspect fixtures/sample --input-tokens 250000 --output-tokens 50000
+
+Token overrides:
+  --input-tokens n   Estimate each route with this input token count instead of route defaults
+  --output-tokens n  Estimate each route with this output token count instead of route defaults
 `;
 
 function readPackageVersion(): string {
