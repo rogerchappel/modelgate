@@ -40,9 +40,10 @@ npm test
 npm run smoke
 node dist/src/cli.js inspect fixtures/sample --format markdown
 node dist/src/cli.js inspect fixtures/sample --format json --output out/report.json
+node dist/src/cli.js inspect fixtures/sample --input-tokens 250000 --output-tokens 50000
 ```
 
-Example output includes a route estimate table and findings such as `route.no-fallback` or `budget.output-ceiling`.
+Use `--input-tokens` and `--output-tokens` when you want to stress-test every route against a specific workload size instead of the fixture defaults. Example output includes a route estimate table and findings such as `route.no-fallback` or `budget.output-ceiling`.
 
 ## Fixture shape
 
