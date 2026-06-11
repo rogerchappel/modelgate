@@ -103,3 +103,9 @@ See [SECURITY.md](SECURITY.md). Please do not file issues containing credentials
 ## License
 
 MIT
+
+## Verification
+
+Run the release-readiness checks that match this package before publishing or opening a release PR.
+
+- `npm run release:check` - run the full release gate
