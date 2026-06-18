@@ -87,6 +87,7 @@ npm test
 npm run check
 npm run build
 npm run smoke
+npm run package:smoke
 bash scripts/validate.sh
 ```
 
@@ -109,3 +110,4 @@ MIT
 Run the release-readiness checks that match this package before publishing or opening a release PR.
 
 - `npm run release:check` - run the full release gate
+- `npm run package:smoke` - inspect the npm package contents with a dry run
