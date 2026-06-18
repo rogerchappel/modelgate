@@ -42,3 +42,6 @@ jobs:
 
       - name: Validate repository
         run: bash scripts/validate.sh
+
+      - name: Package smoke
+        run: npm run package:smoke

@@ -6,6 +6,10 @@ This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Changed
+
+- Added a named package smoke script and CI step for npm pack verification.
+
 ### Added
 
 - Local-first TypeScript library for loading redacted provider and route fixtures.
