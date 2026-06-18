@@ -30,7 +30,8 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/tests/**/*.test.js",
     "smoke": "npm run build && bash scripts/smoke.sh",
-    "release:check": "npm run check && npm test && npm run smoke && npm pack --dry-run"
+    "package:smoke": "npm pack --dry-run",
+    "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "llm",
