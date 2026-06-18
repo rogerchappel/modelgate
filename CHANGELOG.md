@@ -14,6 +14,10 @@ This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/
 - Fixture-backed Node tests and real CLI smoke validation.
 - README, safety policy, contributing guidance, examples, and GitHub metadata.
 
+### Changed
+
+- Added a named package smoke script and routed the release check through it.
+
 ## Release Links
 
 - Latest release: `https://github.com/rogerchappel/modelgate/releases/latest`
