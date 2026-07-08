@@ -15,6 +15,7 @@ const required = [
   'examples/provider-config.md',
   'fixtures/sample/providers.json',
   'fixtures/sample/routes.json',
+  'SKILL.md',
   'README.md',
   'LICENSE',
   'SECURITY.md',
