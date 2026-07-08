@@ -31,14 +31,24 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
   const outputTokens = options.outputTokens ?? DEFAULT_OUTPUT_TOKENS;
   const findings: Finding[] = [];
   const models = flattenModels(config);
+  const seenProviders = new Set<string>();
+  const seenRoutes = new Set<string>();
 
   for (const provider of config.providers) {
+    if (seenProviders.has(provider.id)) {
+      findings.push({ severity: "error", code: "provider.duplicate-id", message: `Provider id ${provider.id} is declared more than once.` });
+    }
+    seenProviders.add(provider.id);
     if (!provider.env?.length && provider.kind !== "local") {
       findings.push({ severity: "warning", code: "provider.missing-env", message: `${provider.id} has no env key names documented.` });
     }
   }
 
   for (const route of config.routes) {
+    if (seenRoutes.has(route.id)) {
+      findings.push({ severity: "error", code: "route.duplicate-id", routeId: route.id, message: `Route id ${route.id} is declared more than once.` });
+    }
+    seenRoutes.add(route.id);
     const primary = models.get(route.primary);
     if (!primary) {
       findings.push({ severity: "error", code: "route.primary-missing", routeId: route.id, modelId: route.primary, message: `${route.id} primary model ${route.primary} is not defined.` });
