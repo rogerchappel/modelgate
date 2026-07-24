@@ -14,7 +14,7 @@ export function flattenModels(config: WorkspaceConfig): Map<string, ResolvedMode
         keyEnv: provider.env ?? []
       };
       if (provider.kind !== undefined) resolved.providerKind = provider.kind;
-      models.set(model.id, resolved);
+      if (!models.has(model.id)) models.set(model.id, resolved);
     }
   }
   return models;
@@ -32,6 +32,7 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
   const findings: Finding[] = [];
   const models = flattenModels(config);
   const seenProviders = new Set<string>();
+  const seenModels = new Map<string, string>();
   const seenRoutes = new Set<string>();
 
   for (const provider of config.providers) {
@@ -39,6 +40,19 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
       findings.push({ severity: "error", code: "provider.duplicate-id", message: `Provider id ${provider.id} is declared more than once.` });
     }
     seenProviders.add(provider.id);
+    for (const model of provider.models) {
+      const firstProvider = seenModels.get(model.id);
+      if (firstProvider !== undefined) {
+        findings.push({
+          severity: "error",
+          code: "model.duplicate-id",
+          modelId: model.id,
+          message: `Model id ${model.id} is declared more than once (first in provider ${firstProvider}, again in provider ${provider.id}).`
+        });
+      } else {
+        seenModels.set(model.id, provider.id);
+      }
+    }
     if (!provider.env?.length && provider.kind !== "local") {
       findings.push({ severity: "warning", code: "provider.missing-env", message: `${provider.id} has no env key names documented.` });
     }
