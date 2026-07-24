@@ -9,7 +9,7 @@ Each provider has:
 - `id` — stable provider ID used by models.
 - `kind` — optional provider family, such as `openai`, `anthropic`, `google`, `local`, or `custom`.
 - `env` — environment variable names that operators should configure. Use names only, never values.
-- `models` — model records with IDs, provider ID, cost, optional context window, tags, and enabled state.
+- `models` — model records with IDs, provider ID, cost, optional context window, tags, and enabled state. Every model ID must be unique across the entire workspace, including models under the same provider.
 
 ## `routes.json`
 
@@ -23,3 +23,5 @@ Each route has:
 - `requireTags` — optional tags every model in the route should satisfy.
 
 Use `fixtures/sample` as the reference shape.
+
+Duplicate model IDs are reported as inspection errors because routes refer to models by ID alone. Use `fixtures/duplicate-models` as an example of an invalid ambiguous workspace.

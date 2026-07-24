@@ -3,6 +3,7 @@
 ## `modelgate inspect <directory>`
 
 Reads `<directory>/providers.json` and `<directory>/routes.json`, then writes a local inspection report.
+Provider, model, and route IDs must be unique in their respective workspace scopes; model IDs are global because routes refer to them without a provider qualifier.
 
 Options:
 
