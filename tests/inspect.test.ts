@@ -35,3 +35,60 @@ test("duplicate provider and route ids are reported as errors", () => {
   assert.ok(report.findings.some((finding) => finding.code === "provider.duplicate-id"));
   assert.ok(report.findings.some((finding) => finding.code === "route.duplicate-id"));
 });
+
+test("model ids must be unique across providers and resolve to the first declaration", () => {
+  const report = inspectWorkspace({
+    providers: [
+      { id: "first", kind: "local", models: [{ id: "shared", provider: "first", cost: { inputPerMillion: 1, outputPerMillion: 2 } }] },
+      { id: "second", kind: "local", models: [{ id: "shared", provider: "second", cost: { inputPerMillion: 100, outputPerMillion: 200 } }] }
+    ],
+    routes: [{ id: "ambiguous", primary: "shared", fallbacks: [], monthlyBudgetUsd: 10 }]
+  });
+
+  assert.equal(report.summary.models, 1);
+  assert.equal(report.summary.errors, 1);
+  assert.equal(report.estimates[0]?.estimatedPrimaryUsd, 1.5);
+  assert.deepEqual(
+    report.findings.find((finding) => finding.code === "model.duplicate-id"),
+    {
+      severity: "error",
+      code: "model.duplicate-id",
+      modelId: "shared",
+      message: "Model id shared is declared more than once (first in provider first, again in provider second)."
+    }
+  );
+});
+
+test("model ids must be unique within a provider", () => {
+  const report = inspectWorkspace({
+    providers: [{
+      id: "local",
+      kind: "local",
+      models: [
+        { id: "shared", provider: "local", cost: { inputPerMillion: 1, outputPerMillion: 2 } },
+        { id: "shared", provider: "local", cost: { inputPerMillion: 3, outputPerMillion: 4 } }
+      ]
+    }],
+    routes: []
+  });
+
+  assert.equal(report.summary.errors, 1);
+  assert.ok(report.findings.some((finding) => finding.code === "model.duplicate-id"));
+});
+
+test("unique model ids remain valid", () => {
+  const report = inspectWorkspace({
+    providers: [{
+      id: "local",
+      kind: "local",
+      models: [
+        { id: "fast", provider: "local", cost: { inputPerMillion: 1, outputPerMillion: 2 } },
+        { id: "slow", provider: "local", cost: { inputPerMillion: 3, outputPerMillion: 4 } }
+      ]
+    }],
+    routes: [{ id: "default", primary: "fast", fallbacks: ["slow"] }]
+  });
+
+  assert.equal(report.summary.errors, 0);
+  assert.equal(report.summary.models, 2);
+});

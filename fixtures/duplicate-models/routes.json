@@ -1,0 +1,8 @@
+[
+  {
+    "id": "ambiguous",
+    "primary": "shared",
+    "fallbacks": [],
+    "monthlyBudgetUsd": 10
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "id": "first",
+    "kind": "local",
+    "models": [
+      {
+        "id": "shared",
+        "provider": "first",
+        "cost": { "inputPerMillion": 1, "outputPerMillion": 2 }
+      }
+    ]
+  },
+  {
+    "id": "second",
+    "kind": "local",
+    "models": [
+      {
+        "id": "shared",
+        "provider": "second",
+        "cost": { "inputPerMillion": 100, "outputPerMillion": 200 }
+      }
+    ]
+  }
+]
