@@ -41,10 +41,15 @@ function readPackageVersion(): string {
 }
 
 function parseNumber(value: string | undefined, label: string): number | undefined {
-  if (value === undefined) return undefined;
+  if (value === undefined || value.startsWith("-")) throw new Error(`${label} requires a non-negative number`);
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed < 0) throw new Error(`${label} must be a non-negative number`);
   return parsed;
+}
+
+function requireValue(value: string | undefined, label: string, description: string): string {
+  if (value === undefined || value.startsWith("-")) throw new Error(`${label} requires ${description}`);
+  return value;
 }
 
 export function parseArgs(argv: string[]): CliOptions {
@@ -53,22 +58,29 @@ export function parseArgs(argv: string[]): CliOptions {
   const [command, input, ...rest] = argv;
   if (command !== "inspect" || !input) throw new Error("Expected: modelgate inspect <directory>. Run modelgate --help for details.");
   const options: CliOptions = { command, input, format: "markdown" };
+  const seen = new Set<string>();
   for (let index = 0; index < rest.length; index += 1) {
-    const arg = rest[index];
+    const arg = rest[index]!;
     const next = rest[index + 1];
+    const option = arg === "-o" ? "--output" : arg;
+    if (seen.has(option)) throw new Error(`${option} may only be specified once`);
     if (arg === "--format") {
+      requireValue(next, arg, "markdown or json");
       if (next !== "markdown" && next !== "json") throw new Error("--format must be markdown or json");
       options.format = next;
+      seen.add(option);
       index += 1;
     } else if (arg === "--output" || arg === "-o") {
-      if (!next) throw new Error(`${arg} requires a path`);
-      options.output = next;
+      options.output = requireValue(next, arg, "a path");
+      seen.add(option);
       index += 1;
     } else if (arg === "--input-tokens") {
       options.inputTokens = parseNumber(next, arg);
+      seen.add(option);
       index += 1;
     } else if (arg === "--output-tokens") {
       options.outputTokens = parseNumber(next, arg);
+      seen.add(option);
       index += 1;
     } else {
       throw new Error(`Unknown option: ${arg}`);
