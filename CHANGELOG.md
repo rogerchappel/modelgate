@@ -6,6 +6,10 @@ This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/
 
 ## [Unreleased]
 
+### Fixed
+
+- Reject malformed provider, model, and route fixture fields with indexed configuration paths before inspection.
+
 ### Changed
 
 - Added a named package smoke script and CI step for npm pack verification.
