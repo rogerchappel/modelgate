@@ -24,4 +24,6 @@ Each route has:
 
 Use `fixtures/sample` as the reference shape.
 
+All documented fields are validated when the fixture is loaded. IDs, names, URLs, currency codes, environment variable names, model references, and tags must be non-empty strings; array entries are reported with their exact index. Cost values, context windows, budgets, and price ceilings must be finite non-negative numbers, and `enabled` must be a boolean. Invalid fixtures fail with the full configuration path (for example, `routes[0].requireTags[1]`) before inspection begins.
+
 Duplicate model IDs are reported as inspection errors because routes refer to models by ID alone. Use `fixtures/duplicate-models` as an example of an invalid ambiguous workspace.
