@@ -14,6 +14,8 @@ Options:
 
 Exit codes:
 
-- `0` — inspection completed with no error findings.
+- `0` — inspection completed with no configuration errors; warning-only reports also exit successfully.
 - `1` — CLI usage, file, or JSON parse failure.
 - `2` — inspection completed and found configuration errors.
+
+Warnings such as missing fallbacks and budget ceilings are advisory. CI that needs a stricter project-specific policy can inspect the JSON report and decide which warnings to promote to failures.

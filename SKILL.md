@@ -6,7 +6,7 @@ Use this skill when an agent needs to audit LLM provider, model, route, fallback
 
 - A repository contains redacted provider and route fixtures that need review.
 - An agent is preparing a model-routing change and needs a dry-run report.
-- CI should fail on missing primaries, disabled routes, absent fallbacks, duplicate route ids, or budget ceilings.
+- CI should fail on configuration errors such as missing primaries, disabled routes, or duplicate route ids. Missing fallbacks and budget ceilings are warnings and do not fail CI by themselves.
 
 ## Inputs
 
@@ -33,9 +33,11 @@ Treat ModelGate as a planning and inspection tool. Do not switch production rout
 ## Example
 
 ```bash
-modelgate inspect fixtures/sample --format markdown --out out/report.md
+modelgate inspect fixtures/sample --format markdown --output out/report.md
 modelgate inspect fixtures/sample --format json --input-tokens 2000000 --output-tokens 500000
 ```
+
+Configuration errors exit `2`, CLI usage or input failures exit `1`, and reports containing warnings only exit `0`. CI can inspect the JSON report when a project-specific policy needs to promote warnings to failures.
 
 ## Verification
 
