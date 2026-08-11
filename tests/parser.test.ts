@@ -12,6 +12,16 @@ test("validateWorkspace rejects malformed provider shape", () => {
   assert.throws(() => validateWorkspace({ providers: [{ id: "bad", models: [{}] }], routes: [] } as never), /models\[0\]\.id/);
 });
 
+test("validateWorkspace accepts a model referencing its containing provider", () => {
+  const workspace = { providers: [{ id: "outer", models: [{ id: "m", provider: "outer", cost: { inputPerMillion: 1, outputPerMillion: 1 } }] }], routes: [] };
+  assert.equal(validateWorkspace(workspace).providers[0]?.models[0]?.provider, "outer");
+});
+
+test("validateWorkspace rejects a model referencing a different provider", () => {
+  const workspace = { providers: [{ id: "outer", models: [{ id: "m", provider: "different", cost: { inputPerMillion: 1, outputPerMillion: 1 } }] }], routes: [] };
+  assert.throws(() => validateWorkspace(workspace), /providers\[0\]\.models\[0\]\.provider must match providers\[0\]\.id \(outer\)/);
+});
+
 const validWorkspace = () => ({
   providers: [{
     id: "provider",
