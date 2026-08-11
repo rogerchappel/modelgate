@@ -9,7 +9,7 @@ Each provider has:
 - `id` — stable provider ID used by models.
 - `kind` — optional provider family, such as `openai`, `anthropic`, `google`, `local`, or `custom`.
 - `env` — environment variable names that operators should configure. Use names only, never values.
-- `models` — model records with IDs, provider ID, cost, optional context window, tags, and enabled state. Every model ID must be unique across the entire workspace, including models under the same provider.
+- `models` — model records with IDs, provider ID, cost, optional context window, tags, and enabled state. Every model ID must be unique across the entire workspace, including models under the same provider. Each model's `provider` must exactly match the containing provider's `id`; cross-provider model references are invalid.
 
 ## `routes.json`
 
