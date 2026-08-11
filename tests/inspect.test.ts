@@ -36,6 +36,22 @@ test("duplicate provider and route ids are reported as errors", () => {
   assert.ok(report.findings.some((finding) => finding.code === "route.duplicate-id"));
 });
 
+test("model provider references are checked against their containing provider", () => {
+  const matching = inspectWorkspace({
+    providers: [{ id: "outer", kind: "local", models: [{ id: "good", provider: "outer", cost: { inputPerMillion: 1, outputPerMillion: 1 } }] }],
+    routes: []
+  });
+  assert.equal(matching.summary.errors, 0);
+
+  const mismatched = inspectWorkspace({
+    providers: [{ id: "outer", kind: "local", models: [{ id: "bad", provider: "different", cost: { inputPerMillion: 1, outputPerMillion: 1 } }] }],
+    routes: []
+  });
+  assert.equal(mismatched.summary.errors, 1);
+  assert.equal(mismatched.findings[0]?.code, "model.provider-mismatch");
+  assert.match(mismatched.findings[0]?.message ?? "", /providers\[0\]\.models\[0\]\.provider \(different\)/);
+});
+
 test("model ids must be unique across providers and resolve to the first declaration", () => {
   const report = inspectWorkspace({
     providers: [

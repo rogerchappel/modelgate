@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { access, mkdtemp, rm } from "node:fs/promises";
+import { access, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseArgs, run } from "../src/cli.js";
@@ -74,6 +74,25 @@ test("CLI does not treat an option as an output path", async () => {
     await assert.rejects(access(optionPath));
   } finally {
     await rm(optionPath, { force: true });
+  }
+});
+
+test("inspect exits nonzero with a field-specific provider mismatch diagnostic", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "modelgate-provider-mismatch-"));
+  const stderrWrite = process.stderr.write;
+  let stderr = "";
+  process.stderr.write = ((chunk: string | Uint8Array) => {
+    stderr += chunk.toString();
+    return true;
+  }) as typeof process.stderr.write;
+  try {
+    await writeFile(join(directory, "providers.json"), JSON.stringify([{ id: "outer", models: [{ id: "m", provider: "different", cost: { inputPerMillion: 1, outputPerMillion: 1 } }] }]));
+    await writeFile(join(directory, "routes.json"), JSON.stringify([{ id: "r", primary: "m" }]));
+    assert.equal(await run(["inspect", directory, "--format", "json"]), 1);
+    assert.match(stderr, /providers\[0\]\.models\[0\]\.provider must match providers\[0\]\.id \(outer\)/);
+  } finally {
+    process.stderr.write = stderrWrite;
+    await rm(directory, { recursive: true, force: true });
   }
 });
 

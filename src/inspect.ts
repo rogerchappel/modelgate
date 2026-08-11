@@ -35,12 +35,20 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
   const seenModels = new Map<string, string>();
   const seenRoutes = new Set<string>();
 
-  for (const provider of config.providers) {
+  for (const [providerIndex, provider] of config.providers.entries()) {
     if (seenProviders.has(provider.id)) {
       findings.push({ severity: "error", code: "provider.duplicate-id", message: `Provider id ${provider.id} is declared more than once.` });
     }
     seenProviders.add(provider.id);
-    for (const model of provider.models) {
+    for (const [modelIndex, model] of provider.models.entries()) {
+      if (model.provider !== provider.id) {
+        findings.push({
+          severity: "error",
+          code: "model.provider-mismatch",
+          modelId: model.id,
+          message: `providers[${providerIndex}].models[${modelIndex}].provider (${model.provider}) must match providers[${providerIndex}].id (${provider.id}).`
+        });
+      }
       const firstProvider = seenModels.get(model.id);
       if (firstProvider !== undefined) {
         findings.push({

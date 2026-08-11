@@ -66,6 +66,9 @@ export function validateWorkspace(config: WorkspaceConfig): WorkspaceConfig {
       assertObject(model, modelLabel);
       assertString(model.id, `${modelLabel}.id`);
       assertString(model.provider, `${modelLabel}.provider`);
+      if (model.provider !== provider.id) {
+        throw new ConfigError(`${modelLabel}.provider must match ${providerLabel}.id (${provider.id})`);
+      }
       if (model.contextWindow !== undefined) assertNumber(model.contextWindow, `${modelLabel}.contextWindow`);
       assertObject(model.cost, `${modelLabel}.cost`);
       assertNumber(model.cost.inputPerMillion, `${modelLabel}.cost.inputPerMillion`);
