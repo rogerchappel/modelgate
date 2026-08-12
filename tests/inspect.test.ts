@@ -108,3 +108,46 @@ test("unique model ids remain valid", () => {
   assert.equal(report.summary.errors, 0);
   assert.equal(report.summary.models, 2);
 });
+
+test("fallback chains reject the primary and repeated fallback ids without double-counting estimates", () => {
+  const report = inspectWorkspace({
+    providers: [{
+      id: "local",
+      kind: "local",
+      models: [
+        { id: "primary", provider: "local", cost: { inputPerMillion: 1, outputPerMillion: 2 } },
+        { id: "secondary", provider: "local", cost: { inputPerMillion: 2, outputPerMillion: 4 } }
+      ]
+    }],
+    routes: [{ id: "invalid", primary: "primary", fallbacks: ["primary", "secondary", "secondary"] }]
+  });
+
+  assert.equal(report.summary.errors, 2);
+  assert.deepEqual(report.findings.filter(({ severity }) => severity === "error").map(({ code }) => code), [
+    "route.fallback-is-primary",
+    "route.fallback-duplicate"
+  ]);
+  assert.match(report.findings.find(({ code }) => code === "route.fallback-is-primary")?.message ?? "", /routes\[0\]\.fallbacks\[0\]/);
+  assert.match(report.findings.find(({ code }) => code === "route.fallback-duplicate")?.message ?? "", /routes\[0\]\.fallbacks\[2\]/);
+  assert.equal(report.estimates[0]?.fallbackCount, 1);
+  assert.equal(report.estimates[0]?.estimatedFallbackUsd, 3);
+});
+
+test("ordered distinct fallbacks remain valid and retain their estimate order count", () => {
+  const report = inspectWorkspace({
+    providers: [{
+      id: "local",
+      kind: "local",
+      models: ["primary", "secondary", "tertiary"].map((id, index) => ({
+        id,
+        provider: "local",
+        cost: { inputPerMillion: index + 1, outputPerMillion: index + 1 }
+      }))
+    }],
+    routes: [{ id: "valid", primary: "primary", fallbacks: ["tertiary", "secondary"] }]
+  });
+
+  assert.equal(report.summary.errors, 0);
+  assert.equal(report.estimates[0]?.fallbackCount, 2);
+  assert.equal(report.estimates[0]?.estimatedFallbackUsd, 6.25);
+});

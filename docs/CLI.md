@@ -19,3 +19,5 @@ Exit codes:
 - `2` — inspection completed and found configuration errors.
 
 Warnings such as missing fallbacks and budget ceilings are advisory. CI that needs a stricter project-specific policy can inspect the JSON report and decide which warnings to promote to failures.
+
+Fallback chains are ordered, but each fallback model ID may appear only once and the primary model cannot also be a fallback. Violations are configuration errors, are omitted from fallback cost totals, and produce exit code `2`.
