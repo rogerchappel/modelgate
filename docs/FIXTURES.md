@@ -17,7 +17,7 @@ Each route has:
 
 - `id` — stable route ID.
 - `primary` — model ID for the preferred model.
-- `fallbacks` — optional ordered fallback model IDs.
+- `fallbacks` — optional ordered fallback model IDs. Each ID must be distinct and must not repeat the route's `primary` model.
 - `monthlyBudgetUsd` — optional review budget for the default estimate scenario.
 - `maxInputPerMillion` and `maxOutputPerMillion` — optional price ceilings.
 - `requireTags` — optional tags every model in the route should satisfy.
