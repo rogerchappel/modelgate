@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { access, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { access, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseArgs, run } from "../src/cli.js";
@@ -98,4 +98,24 @@ test("inspect exits nonzero with a field-specific provider mismatch diagnostic",
 
 test("inspect returns configuration error status for duplicate model ids", async () => {
   assert.equal(await run(["inspect", "fixtures/duplicate-models", "--output", "out/duplicate-models.md"]), 2);
+});
+
+test("inspect returns configuration error status for an invalid fallback chain", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "modelgate-fallback-chain-"));
+  try {
+    await writeFile(join(directory, "providers.json"), JSON.stringify([
+      { id: "local", kind: "local", models: [{ id: "m", provider: "local", cost: { inputPerMillion: 1, outputPerMillion: 1 } }] }
+    ]));
+    await writeFile(join(directory, "routes.json"), JSON.stringify([
+      { id: "r", primary: "m", fallbacks: ["m", "m"] }
+    ]));
+    const output = join(directory, "report.json");
+    assert.equal(await run(["inspect", directory, "--format", "json", "--output", output]), 2);
+    const report = JSON.parse(await readFile(output, "utf8"));
+    assert.equal(report.summary.errors, 2);
+    assert.equal(report.estimates[0].fallbackCount, 0);
+    assert.equal(report.estimates[0].estimatedFallbackUsd, 0);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });

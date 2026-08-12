@@ -36,18 +36,28 @@ const validWorkspace = () => ({
       cost: { inputPerMillion: 1, outputPerMillion: 2, currency: "USD" },
       tags: ["general"],
       enabled: true
+    }, {
+      id: "fallback",
+      provider: "provider",
+      cost: { inputPerMillion: 2, outputPerMillion: 3 }
     }]
   }],
   routes: [{
     id: "route",
     description: "Default route",
     primary: "model",
-    fallbacks: ["model"],
+    fallbacks: ["fallback"],
     monthlyBudgetUsd: 10,
     maxInputPerMillion: 2,
     maxOutputPerMillion: 4,
     requireTags: ["general"]
   }]
+});
+
+test("validateWorkspace preserves valid ordered fallback ids", () => {
+  const workspace = validWorkspace();
+  workspace.routes[0]!.fallbacks = ["fallback", "model-2"];
+  assert.deepEqual(validateWorkspace(workspace as never).routes[0]?.fallbacks, ["fallback", "model-2"]);
 });
 
 test("validateWorkspace rejects malformed array entries with indexed paths", () => {
