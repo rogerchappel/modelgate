@@ -66,7 +66,7 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
     }
   }
 
-  for (const route of config.routes) {
+  for (const [routeIndex, route] of config.routes.entries()) {
     if (seenRoutes.has(route.id)) {
       findings.push({ severity: "error", code: "route.duplicate-id", routeId: route.id, message: `Route id ${route.id} is declared more than once.` });
     }
@@ -88,7 +88,29 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
     if (!hasRequiredTags(route, primary)) {
       findings.push({ severity: "warning", code: "route.primary-tags", routeId: route.id, modelId: primary.id, message: `${primary.id} does not satisfy required tags for ${route.id}.` });
     }
-    for (const fallbackId of route.fallbacks ?? []) {
+    const seenFallbacks = new Set<string>();
+    for (const [fallbackIndex, fallbackId] of (route.fallbacks ?? []).entries()) {
+      if (fallbackId === route.primary) {
+        findings.push({
+          severity: "error",
+          code: "route.fallback-is-primary",
+          routeId: route.id,
+          modelId: fallbackId,
+          message: `${route.id} fallback at routes[${routeIndex}].fallbacks[${fallbackIndex}] repeats its primary model ${fallbackId}.`
+        });
+        continue;
+      }
+      if (seenFallbacks.has(fallbackId)) {
+        findings.push({
+          severity: "error",
+          code: "route.fallback-duplicate",
+          routeId: route.id,
+          modelId: fallbackId,
+          message: `${route.id} fallback at routes[${routeIndex}].fallbacks[${fallbackIndex}] repeats fallback model ${fallbackId}.`
+        });
+        continue;
+      }
+      seenFallbacks.add(fallbackId);
       const fallback = models.get(fallbackId);
       if (!fallback) {
         findings.push({ severity: "error", code: "route.fallback-missing", routeId: route.id, modelId: fallbackId, message: `${route.id} fallback model ${fallbackId} is not defined.` });
@@ -107,11 +129,12 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
 
   const estimates = config.routes.map((route) => {
     const primary = models.get(route.primary);
-    const fallbackCosts = (route.fallbacks ?? []).map((id) => models.get(id)).filter((model): model is ResolvedModel => Boolean(model)).map((model) => estimateModelUsd(model, inputTokens, outputTokens));
+    const distinctFallbackIds = [...new Set(route.fallbacks ?? [])].filter((id) => id !== route.primary);
+    const fallbackCosts = distinctFallbackIds.map((id) => models.get(id)).filter((model): model is ResolvedModel => Boolean(model)).map((model) => estimateModelUsd(model, inputTokens, outputTokens));
     const estimatedPrimaryUsd = primary ? estimateModelUsd(primary, inputTokens, outputTokens) : 0;
     const estimatedFallbackUsd = roundUsd(fallbackCosts.reduce((sum, value) => sum + value, 0));
     const budgetStatus: "ok" | "over" | "missing" = route.monthlyBudgetUsd === undefined ? "missing" : estimatedPrimaryUsd <= route.monthlyBudgetUsd ? "ok" : "over";
-    return { routeId: route.id, primary: route.primary, fallbackCount: route.fallbacks?.length ?? 0, estimatedPrimaryUsd, estimatedFallbackUsd, budgetStatus };
+    return { routeId: route.id, primary: route.primary, fallbackCount: distinctFallbackIds.length, estimatedPrimaryUsd, estimatedFallbackUsd, budgetStatus };
   });
 
   const errors = findings.filter((finding) => finding.severity === "error").length;
