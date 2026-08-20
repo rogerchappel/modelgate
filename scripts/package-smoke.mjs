@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -49,7 +49,8 @@ if (install.status !== 0) {
   process.exit(install.status || 1);
 }
 
-const imported = spawnSync('node', ['--input-type=module', '--eval', `import { inspectWorkspace } from '${packageName}'; if (typeof inspectWorkspace !== 'function') process.exit(1)`], {
+writeFileSync(join(installDirectory, 'smoke.mjs'), `import { inspectWorkspace } from '${packageName}'; if (typeof inspectWorkspace !== 'function') process.exit(1);`);
+const imported = spawnSync('node', ['smoke.mjs'], {
   cwd: installDirectory,
   encoding: 'utf8'
 });

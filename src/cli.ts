@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { mkdir, writeFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { formatJson, formatMarkdown } from "./format.js";
@@ -117,7 +118,7 @@ export async function run(argv = process.argv.slice(2)): Promise<number> {
   }
 }
 
-const isDirectRun = process.argv[1] === fileURLToPath(import.meta.url);
+const isDirectRun = process.argv[1] !== undefined && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isDirectRun) {
   run().then((code) => {
     process.exitCode = code;
