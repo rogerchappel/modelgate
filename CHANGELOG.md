@@ -8,6 +8,7 @@ This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/
 
 ### Fixed
 
+- Adopt the available `modelgate-cli` npm identity while retaining the `modelgate` executable, with registry, documentation, import, and packed-artifact checks.
 - Reject malformed provider, model, and route fixture fields with indexed configuration paths before inspection.
 - Report repeated fallback IDs and primary-as-fallback entries as configuration errors without double-counting route estimates.
 
