@@ -1,5 +1,11 @@
 # CLI Reference
 
+Install the `modelgate-cli` package to provide the `modelgate` executable:
+
+```sh
+npm install modelgate-cli
+```
+
 ## `modelgate inspect <directory>`
 
 Reads `<directory>/providers.json` and `<directory>/routes.json`, then writes a local inspection report.

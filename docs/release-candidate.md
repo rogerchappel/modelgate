@@ -7,6 +7,7 @@ Generated: 2026-05-29 20:34:33 UTC
 ## Scope
 
 Release-candidate readiness pass for `rogerchappel/modelgate` on branch `release-candidate/modelgate`.
+The publishable npm package identity is `modelgate-cli`; the installed executable remains `modelgate`.
 
 ## Verification
 
@@ -16,7 +17,8 @@ Release-candidate readiness pass for `rogerchappel/modelgate` on branch `release
 - `npm run build`: pass
 - `npm run smoke`: pass, inspected 2 fixture routes
 - `bash scripts/validate.sh`: pass
-- `npm run release:check`: pass, including `npm pack --dry-run`
+- `npm run package:identity`: verifies the manifest, README install/import examples, and npm registry ownership or availability
+- `npm run release:check`: includes package identity and an installed-tarball import/CLI smoke test
 - `node /Users/roger/Developer/my-opensource/releasebox/bin/releasebox.js check .`: pass
 - `node /Users/roger/Developer/my-opensource/releasebox/bin/releasebox.js notes . > RELEASE_NOTES.md`: pass
 
