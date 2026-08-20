@@ -1,5 +1,5 @@
 {
-  "name": "modelgate",
+  "name": "modelgate-cli",
   "version": "0.1.0",
   "description": "Local-first LLM route, fallback, and budget inspector for agent/developer workflows.",
   "type": "module",
@@ -31,8 +31,9 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/tests/**/*.test.js",
     "smoke": "npm run build && bash scripts/smoke.sh",
+    "package:identity": "node scripts/check-package-identity.mjs",
     "package:smoke": "npm run build && node scripts/package-smoke.mjs",
-    "release:check": "npm run check && npm test && npm run smoke && npm run package:smoke"
+    "release:check": "npm run package:identity && npm run check && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "llm",
