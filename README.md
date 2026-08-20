@@ -17,6 +17,12 @@ Agent stacks tend to grow provider configs faster than humans can review them. `
 ## Install
 
 ```sh
+npm install modelgate-cli
+```
+
+The published package is `modelgate-cli`; it installs the `modelgate` command. For development from this checkout:
+
+```sh
 npm install
 npm run build
 ```
@@ -61,7 +67,7 @@ See [`fixtures/sample`](fixtures/sample) and [`examples/provider-config.md`](exa
 ## Library API
 
 ```ts
-import { inspectWorkspace, loadWorkspace, formatMarkdown } from "modelgate";
+import { inspectWorkspace, loadWorkspace, formatMarkdown } from "modelgate-cli";
 
 const workspace = await loadWorkspace("fixtures/sample");
 const report = inspectWorkspace(workspace);
