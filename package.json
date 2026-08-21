@@ -32,8 +32,9 @@
     "test": "npm run build && node --test dist/tests/**/*.test.js",
     "smoke": "npm run build && bash scripts/smoke.sh",
     "package:identity": "node scripts/check-package-identity.mjs",
+    "release:contract": "node scripts/check-release-contract.mjs",
     "package:smoke": "npm run build && node scripts/package-smoke.mjs",
-    "release:check": "npm run package:identity && npm run check && npm test && npm run smoke && npm run package:smoke"
+    "release:check": "npm run package:identity && npm run release:contract && npm run check && npm test && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "llm",
