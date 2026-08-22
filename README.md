@@ -20,7 +20,15 @@ Agent stacks tend to grow provider configs faster than humans can review them. `
 npm install modelgate-cli
 ```
 
-The published package is `modelgate-cli`; it installs the `modelgate` command. For development from this checkout:
+The npm package name is `modelgate-cli`; it installs the `modelgate` command. Until the first npm publish succeeds, install the tarball attached to the matching [GitHub release](https://github.com/rogerchappel/modelgate/releases) instead:
+
+```sh
+npm install https://github.com/rogerchappel/modelgate/releases/download/v0.1.0/modelgate-cli-0.1.0.tgz
+```
+
+The npm command above becomes available after the package appears on the [npm registry](https://www.npmjs.com/package/modelgate-cli). The release workflow smoke-tests one packed artifact, publishes that exact tarball to npm with provenance, and attaches it to the GitHub release.
+
+For development from this checkout:
 
 ```sh
 npm install
@@ -116,4 +124,5 @@ MIT
 Run the release-readiness checks that match this package before publishing or opening a release PR.
 
 - `npm run release:check` - run the full release gate
+- `npm run release:contract` - pack without publishing and verify the package and release-workflow contract
 - `npm run package:smoke` - inspect the npm package contents with a dry run

@@ -18,6 +18,7 @@ The publishable npm package identity is `modelgate-cli`; the installed executabl
 - `npm run smoke`: pass, inspected 2 fixture routes
 - `bash scripts/validate.sh`: pass
 - `npm run package:identity`: verifies the manifest, README install/import examples, and npm registry ownership or availability
+- `npm run release:contract`: packs without publishing and verifies the packed identity, CLI, repository, and trusted-publishing workflow contract
 - `npm run release:check`: includes package identity and an installed-tarball import/CLI smoke test
 - `node /Users/roger/Developer/my-opensource/releasebox/bin/releasebox.js check .`: pass
 - `node /Users/roger/Developer/my-opensource/releasebox/bin/releasebox.js notes . > RELEASE_NOTES.md`: pass
@@ -27,7 +28,7 @@ The publishable npm package identity is `modelgate-cli`; the installed executabl
 - V1 audits local, redacted provider and route fixtures only.
 - It does not proxy LLM traffic, read provider credentials, mutate provider settings, or make hidden network calls.
 - Cost estimates are deterministic review aids, not billing guarantees.
-- npm publish and GitHub release creation remain explicit release actions.
+- A version tag runs the release workflow, which publishes the checked tarball to npm with provenance and attaches that same artifact to the GitHub release.
 
 ## Blockers
 
