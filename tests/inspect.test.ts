@@ -151,3 +151,34 @@ test("ordered distinct fallbacks remain valid and retain their estimate order co
   assert.equal(report.estimates[0]?.fallbackCount, 2);
   assert.equal(report.estimates[0]?.estimatedFallbackUsd, 6.25);
 });
+
+test("price ceilings cover each resolved model in the route chain exactly once", () => {
+  const report = inspectWorkspace({
+    providers: [{
+      id: "local",
+      kind: "local",
+      models: [
+        { id: "primary", provider: "local", cost: { inputPerMillion: 11, outputPerMillion: 20 } },
+        { id: "fallback", provider: "local", cost: { inputPerMillion: 30, outputPerMillion: 41 } }
+      ]
+    }],
+    routes: [{
+      id: "limited",
+      primary: "primary",
+      fallbacks: ["fallback", "fallback", "missing"],
+      maxInputPerMillion: 10,
+      maxOutputPerMillion: 40
+    }]
+  });
+
+  assert.deepEqual(
+    report.findings.filter(({ code }) => code.startsWith("budget.")).map(({ code, routeId, modelId }) => ({ code, routeId, modelId })),
+    [
+      { code: "budget.input-ceiling", routeId: "limited", modelId: "primary" },
+      { code: "budget.input-ceiling", routeId: "limited", modelId: "fallback" },
+      { code: "budget.output-ceiling", routeId: "limited", modelId: "fallback" }
+    ]
+  );
+  assert.equal(report.estimates[0]?.fallbackCount, 2);
+  assert.equal(report.estimates[0]?.estimatedFallbackUsd, 40.25);
+});
