@@ -25,6 +25,11 @@ try {
   const packed = spawnSync('npm', ['pack', '--json', '--pack-destination', directory], { encoding: 'utf8' });
   if (packed.status !== 0) throw new Error(`${packed.stdout}\n${packed.stderr}`);
   const filename = JSON.parse(packed.stdout)[0].filename;
+  const sourceManifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+  const expectedFilename = `${sourceManifest.name}-${sourceManifest.version}.tgz`;
+  if (filename !== expectedFilename) {
+    throw new Error(`packed filename must be ${expectedFilename}, received ${filename}`);
+  }
   const extracted = spawnSync('tar', ['-xOf', join(directory, filename), 'package/package.json'], { encoding: 'utf8' });
   if (extracted.status !== 0) throw new Error(extracted.stderr);
   const manifest = JSON.parse(extracted.stdout);

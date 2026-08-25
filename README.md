@@ -20,13 +20,11 @@ Agent stacks tend to grow provider configs faster than humans can review them. `
 npm install modelgate-cli
 ```
 
-The npm package name is `modelgate-cli`; it installs the `modelgate` command. Until the first npm publish succeeds, install the tarball attached to the matching [GitHub release](https://github.com/rogerchappel/modelgate/releases) instead:
+The npm package name is `modelgate-cli`; it installs the `modelgate` command. The npm command above becomes available after the package appears on the [npm registry](https://www.npmjs.com/package/modelgate-cli).
 
-```sh
-npm install https://github.com/rogerchappel/modelgate/releases/download/v0.1.0/modelgate-cli-0.1.0.tgz
-```
+The historical [v0.1.0 GitHub release](https://github.com/rogerchappel/modelgate/releases/tag/v0.1.0) predates the current package identity. Its `modelgate-0.1.0.tgz` asset contains the legacy package named `modelgate`, not `modelgate-cli`, and is not an installation fallback for the current package.
 
-The npm command above becomes available after the package appears on the [npm registry](https://www.npmjs.com/package/modelgate-cli). The release workflow smoke-tests one packed artifact, publishes that exact tarball to npm with provenance, and attaches it to the GitHub release.
+For future tags, the release workflow smoke-tests one packed artifact, publishes that exact tarball to npm with provenance, and attaches it to the matching [GitHub release](https://github.com/rogerchappel/modelgate/releases). The asset name is derived from the current manifest as `modelgate-cli-${version}.tgz`; the release contract verifies that name before a tag is created.
 
 For development from this checkout:
 
