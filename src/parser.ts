@@ -33,6 +33,9 @@ function assertNumber(value: unknown, label: string): asserts value is number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 0) throw new ConfigError(`${label} must be a non-negative number`);
 }
 
+function assertPositiveNumber(value: unknown, label: string): asserts value is number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) throw new ConfigError(`${label} must be a positive number`);
+}
 
 function assertBoolean(value: unknown, label: string): asserts value is boolean {
   if (typeof value !== "boolean") throw new ConfigError(`${label} must be a boolean`);
@@ -69,7 +72,7 @@ export function validateWorkspace(config: WorkspaceConfig): WorkspaceConfig {
       if (model.provider !== provider.id) {
         throw new ConfigError(`${modelLabel}.provider must match ${providerLabel}.id (${provider.id})`);
       }
-      if (model.contextWindow !== undefined) assertNumber(model.contextWindow, `${modelLabel}.contextWindow`);
+      if (model.contextWindow !== undefined) assertPositiveNumber(model.contextWindow, `${modelLabel}.contextWindow`);
       assertObject(model.cost, `${modelLabel}.cost`);
       assertNumber(model.cost.inputPerMillion, `${modelLabel}.cost.inputPerMillion`);
       assertNumber(model.cost.outputPerMillion, `${modelLabel}.cost.outputPerMillion`);
