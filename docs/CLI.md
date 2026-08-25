@@ -24,6 +24,6 @@ Exit codes:
 - `1` — CLI usage, file, or JSON parse failure.
 - `2` — inspection completed and found configuration errors.
 
-Warnings such as missing fallbacks and budget ceilings are advisory. CI that needs a stricter project-specific policy can inspect the JSON report and decide which warnings to promote to failures.
+Warnings such as missing fallbacks and budget ceilings are advisory. Input and output price ceilings apply to the resolved primary and every valid, distinct fallback in the full route chain; each over-ceiling model receives a route- and model-specific finding. CI that needs a stricter project-specific policy can inspect the JSON report and decide which warnings to promote to failures.
 
 Fallback chains are ordered, but each fallback model ID may appear only once and the primary model cannot also be a fallback. Violations are configuration errors, are omitted from fallback cost totals, and produce exit code `2`.
