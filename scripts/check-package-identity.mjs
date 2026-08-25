@@ -6,6 +6,13 @@ const expectedRepository = 'https://github.com/rogerchappel/modelgate';
 const manifest = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
 const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
 
+const releaseAssetUrls = [...readme.matchAll(/https:\/\/github\.com\/rogerchappel\/modelgate\/releases\/download\/[^\s)]+/g)]
+  .map(([url]) => url);
+
+if (releaseAssetUrls.length !== 0) {
+  throw new Error(`README must not hard-code release asset URLs: ${releaseAssetUrls.join(', ')}`);
+}
+
 if (manifest.name !== expectedName) {
   throw new Error(`package name must be ${expectedName}, received ${manifest.name}`);
 }
@@ -13,6 +20,16 @@ if (manifest.name !== expectedName) {
 for (const command of [`npm install ${expectedName}`, `from "${expectedName}"`]) {
   if (!readme.includes(command)) {
     throw new Error(`README is missing package identity reference: ${command}`);
+  }
+}
+
+for (const statement of [
+  'modelgate-cli-${version}.tgz',
+  'modelgate-0.1.0.tgz',
+  'not `modelgate-cli`'
+]) {
+  if (!readme.includes(statement)) {
+    throw new Error(`README is missing release identity guidance: ${statement}`);
   }
 }
 
