@@ -119,3 +119,24 @@ test("inspect returns configuration error status for an invalid fallback chain",
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test("inspect rejects a zero context window with its configuration path", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "modelgate-context-window-"));
+  const stderrWrite = process.stderr.write;
+  let stderr = "";
+  process.stderr.write = ((chunk: string | Uint8Array) => {
+    stderr += chunk.toString();
+    return true;
+  }) as typeof process.stderr.write;
+  try {
+    await writeFile(join(directory, "providers.json"), JSON.stringify([
+      { id: "local", kind: "local", models: [{ id: "m", provider: "local", contextWindow: 0, cost: { inputPerMillion: 1, outputPerMillion: 1 } }] }
+    ]));
+    await writeFile(join(directory, "routes.json"), JSON.stringify([{ id: "r", primary: "m" }]));
+    assert.equal(await run(["inspect", directory, "--format", "json"]), 1);
+    assert.match(stderr, /providers\[0\]\.models\[0\]\.contextWindow must be a positive number/);
+  } finally {
+    process.stderr.write = stderrWrite;
+    await rm(directory, { recursive: true, force: true });
+  }
+});

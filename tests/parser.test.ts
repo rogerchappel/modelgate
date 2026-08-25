@@ -96,6 +96,21 @@ test("validateWorkspace rejects malformed optional scalar fields", () => {
   }
 });
 
+test("validateWorkspace requires a positive model context window", () => {
+  const workspace = validWorkspace();
+  workspace.providers[0]!.models[0]!.contextWindow = 0;
+  assert.throws(
+    () => validateWorkspace(workspace as never),
+    /providers\[0\]\.models\[0\]\.contextWindow must be a positive number/
+  );
+
+  workspace.providers[0]!.models[0]!.contextWindow = 1;
+  workspace.routes[0]!.monthlyBudgetUsd = 0;
+  workspace.routes[0]!.maxInputPerMillion = 0;
+  workspace.routes[0]!.maxOutputPerMillion = 0;
+  assert.equal(validateWorkspace(workspace as never).providers[0]?.models[0]?.contextWindow, 1);
+});
+
 test("validateWorkspace rejects non-object provider, model, cost, and route entries", () => {
   for (const [path, mutate] of [
     ["providers[0]", (workspace: ReturnType<typeof validWorkspace>) => { workspace.providers[0] = null as never; }],

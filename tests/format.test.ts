@@ -23,3 +23,17 @@ test("formats fallback-chain errors in markdown and json", () => {
     routeId: "r", primary: "m", fallbackCount: 1, estimatedPrimaryUsd: 1.25, estimatedFallbackUsd: 2.5, budgetStatus: "missing"
   });
 });
+
+test("formats fallback price-ceiling findings with route and model context", () => {
+  const report = inspectWorkspace({
+    providers: [{ id: "local", kind: "local", models: [
+      { id: "primary", provider: "local", cost: { inputPerMillion: 1, outputPerMillion: 1 } },
+      { id: "expensive", provider: "local", cost: { inputPerMillion: 20, outputPerMillion: 30 } }
+    ] }],
+    routes: [{ id: "limited", primary: "primary", fallbacks: ["expensive"], maxInputPerMillion: 10, maxOutputPerMillion: 10 }]
+  });
+  const markdown = formatMarkdown(report);
+  assert.match(markdown, /budget\.input-ceiling.*limited \/ expensive/);
+  assert.match(markdown, /budget\.output-ceiling.*limited \/ expensive/);
+  assert.equal(JSON.parse(formatJson(report)).summary.warnings, 2);
+});
