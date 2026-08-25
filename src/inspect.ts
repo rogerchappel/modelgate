@@ -26,6 +26,15 @@ function hasRequiredTags(route: RouteConfig, model: ResolvedModel): boolean {
   return route.requireTags.every((tag) => tags.has(tag));
 }
 
+function addPriceCeilingFindings(findings: Finding[], route: RouteConfig, model: ResolvedModel): void {
+  if (route.maxInputPerMillion !== undefined && model.cost.inputPerMillion > route.maxInputPerMillion) {
+    findings.push({ severity: "warning", code: "budget.input-ceiling", routeId: route.id, modelId: model.id, message: `${model.id} input price exceeds ${route.id} ceiling.` });
+  }
+  if (route.maxOutputPerMillion !== undefined && model.cost.outputPerMillion > route.maxOutputPerMillion) {
+    findings.push({ severity: "warning", code: "budget.output-ceiling", routeId: route.id, modelId: model.id, message: `${model.id} output price exceeds ${route.id} ceiling.` });
+  }
+}
+
 export function inspectWorkspace(config: WorkspaceConfig, options: InspectOptions = {}): InspectionReport {
   const inputTokens = options.inputTokens ?? DEFAULT_INPUT_TOKENS;
   const outputTokens = options.outputTokens ?? DEFAULT_OUTPUT_TOKENS;
@@ -88,6 +97,7 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
     if (!hasRequiredTags(route, primary)) {
       findings.push({ severity: "warning", code: "route.primary-tags", routeId: route.id, modelId: primary.id, message: `${primary.id} does not satisfy required tags for ${route.id}.` });
     }
+    addPriceCeilingFindings(findings, route, primary);
     const seenFallbacks = new Set<string>();
     for (const [fallbackIndex, fallbackId] of (route.fallbacks ?? []).entries()) {
       if (fallbackId === route.primary) {
@@ -118,12 +128,7 @@ export function inspectWorkspace(config: WorkspaceConfig, options: InspectOption
       }
       if (fallback.enabled === false) findings.push({ severity: "warning", code: "route.fallback-disabled", routeId: route.id, modelId: fallback.id, message: `${route.id} fallback ${fallback.id} is disabled.` });
       if (!hasRequiredTags(route, fallback)) findings.push({ severity: "warning", code: "route.fallback-tags", routeId: route.id, modelId: fallback.id, message: `${fallback.id} does not satisfy required tags for ${route.id}.` });
-    }
-    if (route.maxInputPerMillion !== undefined && primary.cost.inputPerMillion > route.maxInputPerMillion) {
-      findings.push({ severity: "warning", code: "budget.input-ceiling", routeId: route.id, modelId: primary.id, message: `${primary.id} input price exceeds ${route.id} ceiling.` });
-    }
-    if (route.maxOutputPerMillion !== undefined && primary.cost.outputPerMillion > route.maxOutputPerMillion) {
-      findings.push({ severity: "warning", code: "budget.output-ceiling", routeId: route.id, modelId: primary.id, message: `${primary.id} output price exceeds ${route.id} ceiling.` });
+      addPriceCeilingFindings(findings, route, fallback);
     }
   }
 
