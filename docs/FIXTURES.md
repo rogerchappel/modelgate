@@ -19,11 +19,11 @@ Each route has:
 - `primary` — model ID for the preferred model.
 - `fallbacks` — optional ordered fallback model IDs. Each ID must be distinct and must not repeat the route's `primary` model.
 - `monthlyBudgetUsd` — optional review budget for the default estimate scenario.
-- `maxInputPerMillion` and `maxOutputPerMillion` — optional price ceilings.
+- `maxInputPerMillion` and `maxOutputPerMillion` — optional advisory price ceilings checked against the primary and every resolved fallback model in the route chain.
 - `requireTags` — optional tags every model in the route should satisfy.
 
 Use `fixtures/sample` as the reference shape.
 
-All documented fields are validated when the fixture is loaded. IDs, names, URLs, currency codes, environment variable names, model references, and tags must be non-empty strings; array entries are reported with their exact index. Cost values, context windows, budgets, and price ceilings must be finite non-negative numbers, and `enabled` must be a boolean. Invalid fixtures fail with the full configuration path (for example, `routes[0].requireTags[1]`) before inspection begins.
+All documented fields are validated when the fixture is loaded. IDs, names, URLs, currency codes, environment variable names, model references, and tags must be non-empty strings; array entries are reported with their exact index. Context windows must be finite positive numbers. Cost values, budgets, and price ceilings must be finite non-negative numbers, and `enabled` must be a boolean. Invalid fixtures fail with the full configuration path (for example, `routes[0].requireTags[1]`) before inspection begins.
 
 Duplicate model IDs are reported as inspection errors because routes refer to models by ID alone. Use `fixtures/duplicate-models` as an example of an invalid ambiguous workspace.

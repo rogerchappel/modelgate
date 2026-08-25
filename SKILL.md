@@ -6,7 +6,7 @@ Use this skill when an agent needs to audit LLM provider, model, route, fallback
 
 - A repository contains redacted provider and route fixtures that need review.
 - An agent is preparing a model-routing change and needs a dry-run report.
-- CI should fail on configuration errors such as missing primaries, disabled routes, or duplicate route ids. Missing fallbacks and budget ceilings are warnings and do not fail CI by themselves.
+- CI should fail on configuration errors such as missing primaries, disabled routes, or duplicate route ids. Missing fallbacks and price-ceiling findings are advisory warnings and do not fail CI by themselves; ceilings cover the primary and every valid, distinct fallback in the route chain.
 
 ## Inputs
 

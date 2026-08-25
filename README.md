@@ -66,7 +66,7 @@ Use `--input-tokens` and `--output-tokens` when you want to stress-test every ro
 <directory>/routes.json
 ```
 
-`providers.json` contains provider IDs, documented env var names, and model cost metadata. `routes.json` contains primary model IDs, fallback IDs, optional budgets, price ceilings, and required tags.
+`providers.json` contains provider IDs, documented env var names, and model cost metadata. A declared model context window must be greater than zero. `routes.json` contains primary model IDs, fallback IDs, optional budgets, price ceilings, and required tags. Price-ceiling warnings are advisory and cover the primary plus every valid, distinct fallback in the full route chain.
 
 See [`fixtures/sample`](fixtures/sample) and [`examples/provider-config.md`](examples/provider-config.md).
 
