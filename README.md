@@ -22,6 +22,11 @@ npm install modelgate-cli
 
 The npm package name is `modelgate-cli`; it installs the `modelgate` command. The npm command above becomes available after the package appears on the [npm registry](https://www.npmjs.com/package/modelgate-cli).
 
+Modelgate supports Node.js 20 and newer. CI verifies the minimum Node 20 runtime
+and the maintained Node 22 and Node 24 releases. Repository and package
+validation run once on Node 24 after build, typecheck, tests, and CLI smoke have
+passed across the runtime matrix.
+
 The historical [v0.1.0 GitHub release](https://github.com/rogerchappel/modelgate/releases/tag/v0.1.0) predates the current package identity. Its `modelgate-0.1.0.tgz` asset contains the legacy package named `modelgate`, not `modelgate-cli`, and is not an installation fallback for the current package.
 
 For future tags, the release workflow smoke-tests one packed artifact, publishes that exact tarball to npm with provenance, and attaches it to the matching [GitHub release](https://github.com/rogerchappel/modelgate/releases). The asset name is derived from the current manifest as `modelgate-cli-${version}.tgz`; the release contract verifies that name before a tag is created.
