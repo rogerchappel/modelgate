@@ -29,7 +29,7 @@
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true});require('node:fs').rmSync('out',{recursive:true,force:true})\"",
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/tests/**/*.test.js",
+    "test": "npm run build && node --test dist/tests/*.test.js",
     "smoke": "npm run build && bash scripts/smoke.sh",
     "package:identity": "node scripts/check-package-identity.mjs",
     "release:contract": "node scripts/check-release-contract.mjs",
