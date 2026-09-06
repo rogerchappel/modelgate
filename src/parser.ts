@@ -25,6 +25,12 @@ function assertObject(value: unknown, label: string): asserts value is Record<st
   if (typeof value !== "object" || value === null || Array.isArray(value)) throw new ConfigError(`${label} must be an object`);
 }
 
+function assertSupportedKeys(value: Record<string, unknown>, supported: readonly string[], label: string): void {
+  const supportedKeys = new Set(supported);
+  const unknownKeys = Object.keys(value).filter((key) => !supportedKeys.has(key)).sort();
+  if (unknownKeys.length > 0) throw new ConfigError(`${label} has unsupported keys: ${unknownKeys.join(", ")}`);
+}
+
 function assertString(value: unknown, label: string): asserts value is string {
   if (typeof value !== "string" || value.trim() === "") throw new ConfigError(`${label} must be a non-empty string`);
 }
@@ -53,6 +59,7 @@ export function validateWorkspace(config: WorkspaceConfig): WorkspaceConfig {
   for (const [providerIndex, provider] of config.providers.entries()) {
     const providerLabel = `providers[${providerIndex}]`;
     assertObject(provider, providerLabel);
+    assertSupportedKeys(provider, ["id", "kind", "displayName", "env", "baseUrl", "models"], providerLabel);
     assertString(provider.id, `${providerLabel}.id`);
     if (provider.kind !== undefined) {
       assertString(provider.kind, `${providerLabel}.kind`);
@@ -67,6 +74,7 @@ export function validateWorkspace(config: WorkspaceConfig): WorkspaceConfig {
     for (const [modelIndex, model] of provider.models.entries()) {
       const modelLabel = `${providerLabel}.models[${modelIndex}]`;
       assertObject(model, modelLabel);
+      assertSupportedKeys(model, ["id", "provider", "contextWindow", "cost", "tags", "enabled"], modelLabel);
       assertString(model.id, `${modelLabel}.id`);
       assertString(model.provider, `${modelLabel}.provider`);
       if (model.provider !== provider.id) {
@@ -74,6 +82,7 @@ export function validateWorkspace(config: WorkspaceConfig): WorkspaceConfig {
       }
       if (model.contextWindow !== undefined) assertPositiveNumber(model.contextWindow, `${modelLabel}.contextWindow`);
       assertObject(model.cost, `${modelLabel}.cost`);
+      assertSupportedKeys(model.cost, ["inputPerMillion", "outputPerMillion", "currency"], `${modelLabel}.cost`);
       assertNumber(model.cost.inputPerMillion, `${modelLabel}.cost.inputPerMillion`);
       assertNumber(model.cost.outputPerMillion, `${modelLabel}.cost.outputPerMillion`);
       if (model.cost.currency !== undefined) assertString(model.cost.currency, `${modelLabel}.cost.currency`);
@@ -85,6 +94,7 @@ export function validateWorkspace(config: WorkspaceConfig): WorkspaceConfig {
   for (const [routeIndex, route] of config.routes.entries()) {
     const routeLabel = `routes[${routeIndex}]`;
     assertObject(route, routeLabel);
+    assertSupportedKeys(route, ["id", "description", "primary", "fallbacks", "monthlyBudgetUsd", "maxInputPerMillion", "maxOutputPerMillion", "requireTags"], routeLabel);
     assertString(route.id, `${routeLabel}.id`);
     if (route.description !== undefined) assertString(route.description, `${routeLabel}.description`);
     assertString(route.primary, `${routeLabel}.primary`);

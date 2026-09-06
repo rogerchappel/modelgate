@@ -123,3 +123,21 @@ test("validateWorkspace rejects non-object provider, model, cost, and route entr
     assert.throws(() => validateWorkspace(workspace as never), new RegExp(path.replaceAll("[", "\\[").replaceAll("]", "\\]")));
   }
 });
+
+test("validateWorkspace rejects unsupported provider, model, cost, and route keys", () => {
+  const cases: Array<[string, (workspace: ReturnType<typeof validWorkspace>) => void]> = [
+    ["providers[0] has unsupported keys: displayNam", (workspace) => { (workspace.providers[0] as never as Record<string, unknown>).displayNam = "Provider"; }],
+    ["providers[0].models[0] has unsupported keys: enabledd", (workspace) => { (workspace.providers[0]!.models[0] as never as Record<string, unknown>).enabledd = false; }],
+    ["providers[0].models[0].cost has unsupported keys: curreny", (workspace) => { (workspace.providers[0]!.models[0]!.cost as never as Record<string, unknown>).curreny = "USD"; }],
+    ["routes[0] has unsupported keys: monthlyBudgteUsd", (workspace) => { (workspace.routes[0] as never as Record<string, unknown>).monthlyBudgteUsd = 10; }]
+  ];
+
+  for (const [message, mutate] of cases) {
+    const workspace = validWorkspace();
+    mutate(workspace);
+    assert.throws(() => validateWorkspace(workspace as never), (error: Error) => {
+      assert.equal(error.message, message);
+      return true;
+    });
+  }
+});

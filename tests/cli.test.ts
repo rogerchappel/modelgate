@@ -140,3 +140,37 @@ test("inspect rejects a zero context window with its configuration path", async 
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test("inspect rejects misspelled enabled and monthly budget fields with exact paths", async () => {
+  for (const testCase of [
+    {
+      name: "enabled",
+      providers: [{ id: "local", kind: "local", models: [{ id: "m", provider: "local", enabledd: false, cost: { inputPerMillion: 0, outputPerMillion: 0 } }] }],
+      routes: [{ id: "r", primary: "m" }],
+      diagnostic: "providers[0].models[0] has unsupported keys: enabledd"
+    },
+    {
+      name: "monthly-budget",
+      providers: [{ id: "local", kind: "local", models: [{ id: "m", provider: "local", cost: { inputPerMillion: 0, outputPerMillion: 0 } }] }],
+      routes: [{ id: "r", primary: "m", monthlyBudgteUsd: 0 }],
+      diagnostic: "routes[0] has unsupported keys: monthlyBudgteUsd"
+    }
+  ]) {
+    const directory = await mkdtemp(join(tmpdir(), `modelgate-${testCase.name}-`));
+    const stderrWrite = process.stderr.write;
+    let stderr = "";
+    process.stderr.write = ((chunk: string | Uint8Array) => {
+      stderr += chunk.toString();
+      return true;
+    }) as typeof process.stderr.write;
+    try {
+      await writeFile(join(directory, "providers.json"), JSON.stringify(testCase.providers));
+      await writeFile(join(directory, "routes.json"), JSON.stringify(testCase.routes));
+      assert.equal(await run(["inspect", directory, "--format", "json"]), 1);
+      assert.match(stderr, new RegExp(testCase.diagnostic.replaceAll("[", "\\[").replaceAll("]", "\\]")));
+    } finally {
+      process.stderr.write = stderrWrite;
+      await rm(directory, { recursive: true, force: true });
+    }
+  }
+});
