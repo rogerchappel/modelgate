@@ -129,3 +129,7 @@ Run the release-readiness checks that match this package before publishing or op
 - `npm run release:check` - run the full release gate
 - `npm run release:contract` - pack without publishing and verify the package and release-workflow contract
 - `npm run package:smoke` - inspect the npm package contents with a dry run
+
+
+<!-- Automated change by spark worker -->
+This change was automatically processed by oss-pipeline-worker-spark-a
